@@ -1,10 +1,12 @@
-M = {}
+local M = {}
 local ls = require('luasnip')
 local parse_snippet = ls.parser.parse_snippet
 
 
 local apply = require('luasnip.util.extend_decorator').apply
-local conditions = require('condition')
+local register = require('luasnip.util.extend_decorator').register
+
+local conditions = require('conditions')
 local resolver = require('resolver')
 
 local function condition_wrapper(place, condition)
@@ -17,22 +19,28 @@ local function condition_wrapper(place, condition)
 end
 
 function M.make_math_parser(parser, context)
-  local condition = condition_wrapper(context.place, context.condition)
-  local show_condition = condition_wrapper(context.place, context.condition)
+  local function nparser(ctx, body)
+    if type(ctx) == 'string' then
+      ctx = {trig = ctx}
+    end
 
-  context.place = nil
-  context.condition = nil
+    local condition = condition_wrapper(ctx.place, ctx.condition)
+    local show_condition = condition_wrapper(ctx.place, ctx.show_condition)
+    ctx.place = nil
+    ctx.condition = nil
+    ctx.show_condition = nil
 
-  local nparser = apply(parser, {
-    condition = condition,
-    show_condition = show_condition,
-    snippetType = "autosnippet",
-    resolveExpandParams = resolver.consume_slash,
-  })
+    return parser(vim.tbl_extend('keep', ctx, {
+      condition = condition,
+      show_condition = show_condition,
+      snippetType = "autosnippet",
+      resolveExpandParams = resolver.consume_slash,
+    }), body)
+  end
 
-  nparser = apply(nparser, context)
+  register(nparser, {arg_indx=1})
 
-  return nparser
+  return apply(nparser, context)
 end
 
 function M.add_math_snippets(snippets, opts)
@@ -46,14 +54,17 @@ end
 
 function M.operator_snippet(context, count)
   count = count or 0
-  local body = context.name or context.trig or context
+  local body
+  if type(context)=='string' then
+    context = {trig = context}
+  end
+  body = context.name or context.trig
   for i=1,count do
     body = body .. '{$' .. tostring(i) .. '}'
   end
 
-  local parser = M.make_math_parser(parse_snippet, context)
-
-  return parser(body)
+  local parser = M.make_math_parser(parse_snippet)
+  return parser(context, body)
 end
 
 

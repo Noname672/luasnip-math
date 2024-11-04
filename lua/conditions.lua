@@ -1,7 +1,7 @@
 local M = {}
 
 local make_condition = require("luasnip.extras.conditions").make_condition
-local get_node_at_cursor = require('nvim-treesitter-utils').get_node_at_cursor
+local get_node_at_cursor = require('nvim-treesitter.ts_utils').get_node_at_cursor
 
 local MATH_NODES = {
   displayed_equation = true,

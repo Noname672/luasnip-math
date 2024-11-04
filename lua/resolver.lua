@@ -1,4 +1,4 @@
-M = {}
+local M = {}
 
 local util = require("luasnip.util.util")
 
@@ -13,7 +13,7 @@ function M.consume_slash(snippet, line_to_cursor, match, captures)
       FULL = (has_slash and '\\' or '') .. match
     },
     clear_region= {
-      from = {pos[1], pos[2] - #match - has_slash and 1 or 0},
+      from = {pos[1], pos[2] - #match - (has_slash and 1 or 0)},
       to = pos
     }
   }

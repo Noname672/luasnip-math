@@ -20,6 +20,10 @@ local function in_text()
   local node = get_node_at_cursor()
   while node do
     if node:type() == "text_mode" then
+      local parent = node:parent()
+      if parent and MATH_NODES[parent:type()] then
+        return false
+      end
       return true
     elseif MATH_NODES[node:type()] then
       return false
@@ -46,7 +50,7 @@ local function environment()
   if vim.bo.filetype == 'markdown' then
     return in_mathzone()
   else
-    return in_text()
+    return true
   end
 end
 

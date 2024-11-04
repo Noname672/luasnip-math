@@ -40,9 +40,9 @@ function M.add_math_snippets(snippets, opts)
   ls.add_snippets('tex', snippets, opts)
 end
 
-function M.math_postfix()
-  return 1
-end
+-- function M.math_postfix()
+--   return 1
+-- end
 
 function M.operator_snippet(context, count)
   count = count or 0
@@ -57,9 +57,41 @@ function M.operator_snippet(context, count)
 end
 
 
+local setup = false
 
 function M.setup()
+  if not setup then
+    local math = {
+      trig ='mk',
+      name = "Math",
+    }
 
+    local math_block = {
+      trig = 'dm',
+      name = "Block Math",
+    }
+
+    local parser = M.make_math_parser(parse_snippet, {place = 'in_text'})
+
+    ls.add_snippets('markdown', {
+      parser(math, "$$1$"),
+      parser(math_block, [[
+      $$
+      $1 
+      $$
+      ]])
+    })
+
+    ls.add_snippets('tex', {
+      parser(math, "$$1$"),
+      parser(math_block, [[
+      \[
+      $1 
+      \]
+      ]])
+    })
+    setup = true
+  end
 
   return M
 end

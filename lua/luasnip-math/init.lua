@@ -7,8 +7,8 @@ local postfix = require('luasnip.extras.postfix').postfix
 local apply = require('luasnip.util.extend_decorator').apply
 local register = require('luasnip.util.extend_decorator').register
 
-local conditions = require('conditions')
-local resolver = require('resolver')
+local conditions = require('luasnip-math.conditions')
+local resolver = require('luasnip-math.resolver')
 
 local function condition_wrapper(place, condition)
   local ncondition = conditions[place or 'in_mathzone']

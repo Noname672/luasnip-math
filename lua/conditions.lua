@@ -54,9 +54,19 @@ local function environment()
   end
 end
 
+local function after_expression(line_to_cursor, matched_trigger)
+  local index = -1-#matched_trigger
+  local char = line_to_cursor:sub(index,index)
+  if (char:match('%a')) then
+    return true
+  end
+  return false
+end
+
 M.in_mathzone = make_condition(in_mathzone)
 M.in_text = make_condition(in_text)
 M.environment = make_condition(environment)
+M.after_expression = make_condition(after_expression)
 M.trivial = make_condition(function() return true end)
 
 return M

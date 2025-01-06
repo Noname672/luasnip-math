@@ -15,10 +15,13 @@ local TEXT_NODES = {
   label_reference = true,
 }
 
+local MAX_DEPTH = 1000
+
 
 local function in_text()
   local node = get_node_at_cursor()
-  while node do
+  local i = 0
+  while (node and i < MAX_DEPTH) do
     if node:type() == "text_mode" then
       local parent = node:parent()
       if parent and MATH_NODES[parent:type()] then
@@ -29,19 +32,22 @@ local function in_text()
       return false
     end
     node = node:parent()
+    i = i + 1
   end
   return true
 end
 
 local function in_mathzone()
   local node = get_node_at_cursor()
-  while node do
+  local i = 0
+  while (node and i < MAX_DEPTH) do
     if TEXT_NODES[node:type()] then
       return false
     elseif MATH_NODES[node:type()] then
       return true
     end
     node = node:parent()
+    i = i + 1
   end
   return false
 end
